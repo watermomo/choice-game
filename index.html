@@ -1,0 +1,1120 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日语单词挑战</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4a6fa5;
+            --secondary: #ff7e5f;
+            --accent: #6b8c42;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+            --info: #17a2b8;
+        }
+        
+        body {
+            font-family: 'Noto Sans JP', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            color: var(--dark);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+        
+        h1, h2, h3 {
+            color: var(--primary);
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 7px 14px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border 0.3s ease;
+        }
+        
+        input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .options-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+        
+        .option-btn {
+            padding: 1.2rem;
+            background: white;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .option-btn:hover {
+            border-color: var(--primary);
+            background: rgba(74, 111, 165, 0.05);
+        }
+        
+        .timer {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--secondary);
+            text-align: center;
+            margin: 1.5rem 0;
+        }
+        
+        .word-display {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-align: center;
+            margin: 1.5rem 0;
+            min-height: 4rem;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .result-item {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: rgba(74, 111, 165, 0.1);
+            border-radius: 8px;
+        }
+        
+        .result-item span {
+            font-weight: 600;
+            color: var(--primary);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .celebrate {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 100;
+            display: none;
+        }
+        
+        .first-attempt {
+            background-color: rgba(104, 192, 104, 0.2);
+            border-left: 5px solid var(--success);
+            margin-top: 1.5rem;
+        }
+        
+        .first-attempt-title {
+            font-weight: bold;
+            color: var(--success);
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .options-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .word-display {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 登录界面 -->
+        <div id="login-screen" class="card">
+            <h1>日语单词挑战</h1>
+            <div class="form-group">
+                <label for="student-id">学号</label>
+                <input type="text" id="student-id" placeholder="请输入您的学号">
+            </div>
+            <div class="form-group">
+                <label for="student-name">姓名</label>
+                <input type="text" id="student-name" placeholder="请输入您的姓名">
+            </div>
+            <button id="start-btn" class="btn">开始挑战</button>
+        </div>
+        
+        <!-- 游戏界面 -->
+        <div id="game-screen" class="card hidden">
+            <div class="timer" id="timer">03:00</div>
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+            <div class="word-display" id="word-display"></div>
+            <div class="options-grid" id="options-grid"></div>
+        </div>
+        
+        <!-- 结果界面 -->
+        <div id="result-screen" class="card hidden">
+            <h1>挑战结果</h1>
+            <div class="result-item">
+                <span>姓名:</span> <span id="result-name"></span>
+            </div>
+            <div class="result-item">
+                <span>学号:</span> <span id="result-id"></span>
+            </div>
+            <div class="result-item">
+                <span>本次答对题数:</span> <span id="result-score"></span>
+            </div>
+            <div class="result-item">
+                <span>本次正确率:</span> <span id="result-accuracy"></span>
+            </div>
+            
+            <!-- 第一次尝试的结果 -->
+            <div id="first-attempt-container" class="hidden">
+                <div class="first-attempt-title">第一次挑战成绩</div>
+                <div class="result-item first-attempt">
+                    <span>答对题数:</span> <span id="first-attempt-score"></span>
+                </div>
+                <div class="result-item first-attempt">
+                    <span>正确率:</span> <span id="first-attempt-accuracy"></span>
+                </div>
+                <div class="result-item first-attempt">
+                    <span>挑战日期:</span> <span id="first-attempt-date"></span>
+                </div>
+            </div>
+            
+            <button id="restart-btn" class="btn">再来一次</button>
+        </div>
+    </div>
+    
+    <div id="celebrate" class="celebrate"></div>
+    
+    <script>
+        // 根据您提供的单词列表
+        const gameData = [
+            {
+                word: "時間",
+                type: "native",
+                options: ["じがん", "しかん", "じかん", "しがん"],
+                correct: 2
+            },
+            {
+                word: "ねだん",
+                type: "native",
+                options: ["金額", "価格", "値段", "階段"],
+                correct: 2
+            },
+            {
+                word: "先生",
+                type: "native",
+                options: ["せいせん", "せんせい", "せんせん", "せいせい"],
+                correct: 1
+            },
+            {
+                word: "キャンパス",
+                type: "native",
+                options: ["超市", "商场", "广场", "校园"],
+                correct: 3
+            },
+            {
+                word: "授業",
+                type: "native",
+                options: ["じゅうぎょ", "じゅうぎょう", "じゅぎょ", "じゅぎょう"],
+                correct: 3
+            },
+            {
+                word: "教師",
+                type: "native",
+                options: ["ぎょうし", "きょし", "きょうし", "きょじ"],
+                correct: 2
+            },
+            {
+                word: "スケジュール",
+                type: "native",
+                options: ["车票", "月历", "平衡", "日程"],
+                correct: 3
+            },
+            {
+                word: "一緒",
+                type: "native",
+                options: ["いっしょ", "いっしょう", "いしょ", "いしょう"],
+                correct: 0
+            },
+            {
+                word: "迷う",
+                type: "native",
+                options: ["まゆう", "まよう", "まどう", "まとう"],
+                correct: 1
+            },
+            {
+                word: "旅館",
+                type: "native",
+                options: ["りょうかん", "りょかん", "しょうかん", "しゅうかん"],
+                correct: 1
+            },
+            {
+                word: "美しい",
+                type: "native",
+                options: ["うれしい", "うすくしい", "おいしい", "うつくしい"],
+                correct: 3
+            },
+            {
+                word: "昼食",
+                type: "native",
+                options: ["ちゅうしょく", "しゅうしょく", "ちょうしょく", "しょうしゅく"],
+                correct: 0
+            },
+            {
+                word: "熱意",
+                type: "native",
+                options: ["あつい", "ねつい", "じょうい", "めつい"],
+                correct: 1
+            },
+            {
+                word: "れんらく",
+                type: "native",
+                options: ["連絡", "練絡", "联絡", "蓮絡"],
+                correct: 0
+            },
+            {
+                word: "励ます",
+                type: "native",
+                options: ["あげます", "まげます", "さげます", "はげます"],
+                correct: 3
+            },
+            {
+                word: "約束",
+                type: "native",
+                options: ["ようやく", "よやく", "やくそく", "やくそ"],
+                correct: 2
+            },
+            {
+                word: "アニメ",
+                type: "native",
+                options: ["电影", "漫画", "动漫", "电视剧"],
+                correct: 2
+            },
+            {
+                word: "荷物",
+                type: "native",
+                options: ["にもの", "かぶつ", "にもつ", "かもつ"],
+                correct: 2
+            },
+            {
+                word: "うんてん",
+                type: "native",
+                options: ["連転", "運転", "転連", "転運"],
+                correct: 1
+            },
+            {
+                word: "セーター",
+                type: "native",
+                options: ["外套", "衬衫", "毛衣", "围巾"],
+                correct: 2
+            },
+            {
+                word: "先日",
+                type: "native",
+                options: ["ぜんじつ", "ぜんにち", "せんじつ", "せんにち"],
+                correct: 2
+            },
+            {
+                word: "郵便局",
+                type: "native",
+                options: ["ゆびんきょく", "ゆうびんきょく", "ゆびんきゅく", "ゆうびんきゅく"],
+                correct: 1
+            },
+            {
+                word: "チャレンジ",
+                type: "native",
+                options: ["橙子", "机会", "检查", "挑战"],
+                correct: 3
+            },
+            {
+                word: "あきらめる",
+                type: "native",
+                options: ["止める", "締める", "辞める", "諦める"],
+                correct: 3
+            },
+            {
+                word: "病院",
+                type: "native",
+                options: ["びょういん", "びよういん", "びょいん", "びよいん"],
+                correct: 0
+            }, 
+            {
+                word: "八百屋",
+                type: "native",
+                options: ["はっぴゃくや", "やおや", "よおや", "ようか"],
+                correct: 1
+            },
+            {
+                word: "消す",
+                type: "native",
+                options: ["きす", "けす", "かす", "さす"],
+                correct: 1
+            },
+            {
+                word: "汚い",
+                type: "native",
+                options: ["きつい", "きたない", "よごない", "よごい"],
+                correct: 1
+            },
+            {
+                word: "遅れる",
+                type: "native",
+                options: ["おそれる", "おくれる", "ちくれる", "くれる"],
+                correct: 1
+            },
+            {
+                word: "ホテル",
+                type: "loan",
+                options: ["宾馆", "商场", "厕所", "厨房"],
+                correct: 0
+            },
+            {
+                word: "苦手",
+                type: "native",
+                options: ["くて", "にがて", "へた", "へて"],
+                correct: 1
+            },
+            {
+                word: "雑誌",
+                type: "native",
+                options: ["ざっし", "ざし", "さっし", "さし"],
+                correct: 0
+            },
+            {
+                word: "雨",
+                type: "native",
+                options: ["あめ", "めあ", "ゆき", "かぜ"],
+                correct: 0
+            },
+            {
+                word: "津波",
+                type: "native",
+                options: ["つなみ", "つみな", "なつみ", "なみつ"],
+                correct: 0
+            },
+            {
+                word: "くろい",
+                type: "native",
+                options: ["暗い", "黒い", "白い", "明い"],
+                correct: 1
+            },
+            {
+                word: "きらい",
+                type: "native",
+                options: ["嫌い", "綺麗", "期待", "機械"],
+                correct: 0
+            },
+            {
+                word: "甘い",
+                type: "native",
+                options: ["にがい", "めまい", "あまい", "こわい"],
+                correct: 2
+            },
+            {
+                word: "スーツ",
+                type: "native",
+                options: ["袜子", "西装", "衬衫", "裤子"],
+                correct: 1
+            },
+            {
+                word: "七夕",
+                type: "native",
+                options: ["たなばた", "はなたば", "たなたば", "はなばた"],
+                correct: 0
+            },
+            {
+                word: "洗う",
+                type: "native",
+                options: ["はらう", "わらう", "あらう", "ゆらう"],
+                correct: 2
+            },
+            {
+                word: "曇り",
+                type: "native",
+                options: ["くまり", "くもり", "けむり", "こもり"],
+                correct: 1
+            }, 
+            {
+                word: "コピー",
+                type: "native",
+                options: ["咖啡", "便利店", "复印", "打字"],
+                correct: 2
+            }, 
+            {
+                word: "楽しい",
+                type: "native",
+                options: ["おしい", "おいしい", "たのしい", "うれしい"],
+                correct: 2
+            }, 
+            {
+                word: "辛い",
+                type: "native",
+                options: ["かるい", "にくい", "やすい", "からい"],
+                correct: 3
+            },
+            {
+                word: "インターンシップ",
+                type: "native",
+                options: ["实习", "互联网", "兴趣小组", "同学"],
+                correct: 0
+            },
+            {
+                word: "切手",
+                type: "native",
+                options: ["きぷ", "きっぷ", "きて", "きって"],
+                correct: 3
+            },
+            {
+                word: "建物",
+                type: "native",
+                options: ["たてもの", "けんもの", "たてぶつ", "けんもつ"],
+                correct: 0
+            },
+            {
+                word: "スーパー",
+                type: "native",
+                options: ["商场", "便利店", "超市", "派对"],
+                correct: 2
+            },
+            {
+                word: "大変",
+                type: "native",
+                options: ["たへん", "たいへん", "だへん", "だいへん"],
+                correct: 1
+            },
+            {
+                word: "衰える",
+                type: "native",
+                options: ["おどろえる", "さがえる", "おとろえる", "さかえる"],
+                correct: 2
+            },
+            {
+                word: "エアコン",
+                type: "native",
+                options: ["空调", "电视", "电脑", "窗户"],
+                correct: 0
+            },
+            {
+                word: "自転車",
+                type: "native",
+                options: ["じでんしゃ", "じどうしゃ", "じてんしゃ", "じとうしゃ"],
+                correct: 2
+            },
+            {
+                word: "大きい",
+                type: "native",
+                options: ["おおきい", "ちいさい", "ながい", "みじかい"],
+                correct: 0
+            },
+            {
+                word: "上手",
+                type: "native",
+                options: ["じょうず", "うえて", "かみて", "じょうて"],
+                correct: 0
+            },
+            {
+                word: "公園",
+                type: "native",
+                options: ["こうえん", "こえん", "こうえい", "こえい"],
+                correct: 0
+            },
+            {
+                word: "映画",
+                type: "native",
+                options: ["えいが", "えが", "えいか", "えか"],
+                correct: 0
+            },
+            {
+                word: "レストラン",
+                type: "loan",
+                options: ["餐厅", "酒店", "咖啡馆", "酒吧"],
+                correct: 0
+            },
+            {
+                word: "寒い",
+                type: "native",
+                options: ["さむい", "つめたい", "あつい", "あかい"],
+                correct: 0
+            },
+            {
+                word: "牛乳",
+                type: "native",
+                options: ["ぎゅうにゅう", "ぎゅうにゅ", "ぎゅにゅう", "きゅうにゅう"],
+                correct: 0
+            },
+            {
+                word: "地下鉄",
+                type: "native",
+                options: ["ちかてつ", "じかてつ", "ちかでん", "じかでん"],
+                correct: 0
+            },
+            {
+                word: "安い",
+                type: "native",
+                options: ["やすい", "たかい", "おおい", "すくない"],
+                correct: 0
+            },
+            {
+                word: "確認",
+                type: "native",
+                options: ["かくにん", "かっにん", "かくねん", "かっねん"],
+                correct: 0
+            },
+            {
+                word: "調査",
+                type: "native",
+                options: ["ちょうさ", "ちょうしゃ", "ちゅうさ", "ちゅうしゃ"],
+                correct: 0
+            },
+            {
+                word: "ペット",
+                type: "native",
+                options: ["床", "桌子", "椅子", "宠物"],
+                correct: 3
+            },
+            {
+                word: "解決",
+                type: "native",
+                options: ["かいけつ", "かいかつ", "がいけつ", "がいかつ"],
+                correct: 0
+            },
+            {
+                word: "治る",
+                type: "native",
+                options: ["ちる", "のこる", "なおる", "しかる"],
+                correct: 2
+            },
+            {
+                word: "新しい",
+                type: "native",
+                options: ["あたらしい", "あつい", "ふるい", "おもしろい"],
+                correct: 0
+            },
+            {
+                word: "大人",
+                type: "native",
+                options: ["おとこ", "おんな", "おとな", "おこな"],
+                correct: 2
+            },
+            {
+                word: "ビル",
+                type: "native",
+                options: ["啤酒", "大厦", "咖啡", "白酒"],
+                correct: 1
+            },
+            {
+                word: "規則",
+                type: "native",
+                options: ["きそく", "ぎそく", "きぞく", "ぎぞく"],
+                correct: 0
+            },
+            {
+                word: "たのむ",
+                type: "native",
+                options: ["悩む", "頼む", "休む", "好む"],
+                correct: 1
+            },
+            {
+                word: "しらべる",
+                type: "native",
+                options: ["比べる", "並べる", "調べる", "述べる"],
+                correct: 2
+            },
+            {
+                word: "危険",
+                type: "native",
+                options: ["きけん", "ぎけん", "きげん", "ぎげん"],
+                correct: 0
+            },
+            {
+                word: "自由",
+                type: "native",
+                options: ["じゆう", "じゅう", "じゆ", "じゅ"],
+                correct: 0
+            },
+            {
+                word: "目的",
+                type: "native",
+                options: ["もくてき", "もくでき", "もってき", "もでい"],
+                correct: 0
+            },
+            {
+                word: "壊す",
+                type: "native",
+                options: ["くずす", "こわす", "はずす", "よごす"],
+                correct: 1
+            },
+            {
+                word: "ストーブ",
+                type: "native",
+                options: ["围巾", "披肩", "火炉", "停止"],
+                correct: 2
+            },
+            {
+                word: "こうとう",
+                type: "native",
+                options: ["行動", "講堂", "高度", "口頭"],
+                correct: 3
+            },
+            {
+                word: "ブレスレット",
+                type: "native",
+                options: ["耳环", "手链", "连衣裙", "项链"],
+                correct: 1
+            },
+            {
+                word: "貯金",
+                type: "native",
+                options: ["ちょっきん", "ためきん", "ちょきん", "ためがね"],
+                correct: 2
+            }, 
+            {
+                word: "パスポート",
+                type: "native",
+                options: ["密码", "签证", "护照", "银行卡"],
+                correct: 2
+            },
+            {
+                word: "羨ましい",
+                type: "native",
+                options: ["あつかましい", "めざましい", "あやましい", "うらやましい"],
+                correct: 3
+            },
+            {
+                word: "とめる",
+                type: "native",
+                options: ["辞める", "貯める", "泊める", "冷める"],
+                correct: 2
+            },
+            {
+                word: "難しい",
+                type: "native",
+                options: ["たのしい", "きびしい", "むずかしい", "くやしい"],
+                correct: 2
+            },
+            {
+                word: "ズボン",
+                type: "native",
+                options: ["裤子", "袜子", "按钮", "衬衫"],
+                correct: 0
+            },
+            {
+                word: "きかく",
+                type: "native",
+                options: ["計画", "企画", "契機", "機会"],
+                correct: 1
+            },
+            {
+                word: "反応",
+                type: "native",
+                options: ["ほんのう", "はんのう", "たんのう", "ほんおう"],
+                correct: 1
+            },
+            {
+                word: "バッグ",
+                type: "native",
+                options: ["面膜", "包", "口罩", "手套"],
+                correct: 1
+            },
+            {
+                word: "予定",
+                type: "native",
+                options: ["ようてい", "よて", "よてい", "ようて"],
+                correct: 2
+            },
+            {
+                word: "レポート",
+                type: "native",
+                options: ["作业", "笔记本", "报告", "护照"],
+                correct: 2
+            },
+            {
+                word: "有名",
+                type: "native",
+                options: ["ゆめ", "ゆうめえ", "ゆめい", "ゆうめい"],
+                correct: 3
+            },
+            {
+                word: "メッセージ",
+                type: "native",
+                options: ["传真", "消息", "数据", "邮件"],
+                correct: 1
+            },
+            {
+                word: "立派",
+                type: "native",
+                options: ["りっぱい", "りっぱ", "いっぱい", "しっぱい"],
+                correct: 1
+            },
+            {
+                word: "コンテスト",
+                type: "native",
+                options: ["演唱会", "比赛", "便利店", "交流"],
+                correct: 1
+            },
+            {
+                word: "触る",
+                type: "native",
+                options: ["さわる", "ふれる", "しょくる", "ふる"],
+                correct: 0
+            },
+            {
+                word: "養う",
+                type: "native",
+                options: ["うしなう", "ようう", "よしなう", "やしなう"],
+                correct: 3
+            },
+            {
+                word: "妥協",
+                type: "native",
+                options: ["だっきょう", "だきょう", "たっきょう", "たきょう"],
+                correct: 1
+            },
+            {
+                word: "膨らむ",
+                type: "native",
+                options: ["たくらむ", "うくたむ", "ふくらむ", "ぼうらむ"],
+                correct: 2
+            },
+            {
+                word: "沸かす",
+                type: "native",
+                options: ["ふかす", "わかす", "おかす", "ゆかす"],
+                correct: 1
+            },
+            {
+                word: "穏やか",
+                type: "native",
+                options: ["にぎやか", "おだやか", "さわやか", "すみやか"],
+                correct: 1
+            }
+        ];
+
+        // 游戏变量
+        let currentQuestion = 0;
+        let score = 0;
+        let timer;
+        let timeLeft = 180; // 3分钟 = 180秒
+        let studentId = "";
+        let studentName = "";
+        let playerRecords = JSON.parse(localStorage.getItem('playerRecords')) || [];
+        let firstAttemptRecord = null;
+        
+        // DOM元素
+        const loginScreen = document.getElementById('login-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const startBtn = document.getElementById('start-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const timerDisplay = document.getElementById('timer');
+        const wordDisplay = document.getElementById('word-display');
+        const optionsGrid = document.getElementById('options-grid');
+        const progressBar = document.getElementById('progress-bar');
+        const resultName = document.getElementById('result-name');
+        const resultId = document.getElementById('result-id');
+        const resultScore = document.getElementById('result-score');
+        const resultAccuracy = document.getElementById('result-accuracy');
+        const firstAttemptContainer = document.getElementById('first-attempt-container');
+        const firstAttemptScore = document.getElementById('first-attempt-score');
+        const firstAttemptAccuracy = document.getElementById('first-attempt-accuracy');
+        const firstAttemptDate = document.getElementById('first-attempt-date');
+        
+        // 开始游戏
+        startBtn.addEventListener('click', startGame);
+        restartBtn.addEventListener('click', restartGame);
+        
+        function startGame() {
+            studentId = document.getElementById('student-id').value.trim();
+            studentName = document.getElementById('student-name').value.trim();
+            
+            if (!studentId || !studentName) {
+                alert('请输入学号和姓名');
+                return;
+            }
+            
+            // 检查是否是重复玩家并获取第一次记录
+            const playerAllRecords = playerRecords.filter(record => 
+                record.id === studentId && record.name === studentName
+            );
+            
+            if (playerAllRecords.length > 0) {
+                firstAttemptRecord = playerAllRecords[0]; // 第一次记录总是在最前面
+            }
+            
+            loginScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            
+            startTimer();
+            showQuestion();
+        }
+        
+        function showQuestion() {
+            if (currentQuestion >= gameData.length) {
+                endGame();
+                return;
+            }
+            
+            const question = gameData[currentQuestion];
+            wordDisplay.textContent = question.word;
+            
+            // 更新进度条
+            progressBar.style.width = `${(currentQuestion / gameData.length) * 100}%`;
+            
+            // 清空选项
+            optionsGrid.innerHTML = '';
+            
+            // 创建选项的副本并随机排序（但保持正确答案的位置）
+            let options = [...question.options];
+            let correctAnswer = options[question.correct];
+            
+            // 随机排序选项（不包括正确答案）
+            options.splice(question.correct, 1);
+            shuffleArray(options);
+            
+            // 随机插入正确答案的位置
+            const correctPosition = Math.floor(Math.random() * (options.length + 1));
+            options.splice(correctPosition, 0, correctAnswer);
+            const newCorrectIndex = correctPosition;
+            
+            // 添加选项
+            options.forEach((option, index) => {
+                const optionBtn = document.createElement('div');
+                optionBtn.className = 'option-btn';
+                optionBtn.textContent = option;
+                optionBtn.addEventListener('click', () => checkAnswer(index, newCorrectIndex));
+                optionsGrid.appendChild(optionBtn);
+            });
+        }
+        
+        // 洗牌算法
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+        
+        function checkAnswer(selectedIndex, correctIndex) {
+            if (selectedIndex === correctIndex) {
+                score++;
+                // 答对时的视觉效果
+                optionsGrid.children[selectedIndex].style.backgroundColor = 'rgba(40, 167, 69, 0.2)';
+                optionsGrid.children[selectedIndex].style.borderColor = 'var(--success)';
+            } else {
+                // 答错时的视觉效果
+                optionsGrid.children[selectedIndex].style.backgroundColor = 'rgba(220, 53, 69, 0.2)';
+                optionsGrid.children[selectedIndex].style.borderColor = 'var(--danger)';
+                // 显示正确答案
+                optionsGrid.children[correctIndex].style.backgroundColor = 'rgba(40, 167, 69, 0.2)';
+                optionsGrid.children[correctIndex].style.borderColor = 'var(--success)';
+            }
+            
+            // 禁用所有选项
+            const optionButtons = document.querySelectorAll('.option-btn');
+            optionButtons.forEach(button => {
+                button.style.pointerEvents = 'none';
+            });
+            
+            // 1秒后进入下一题
+            setTimeout(() => {
+                currentQuestion++;
+                showQuestion();
+            }, 1000);
+        }
+        
+        function startTimer() {
+            updateTimerDisplay();
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                updateTimerDisplay();
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    endGame();
+                }
+            }, 1000);
+        }
+        
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerDisplay.textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        
+        function endGame() {
+            clearInterval(timer);
+            gameScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            // 保存玩家记录
+            const newRecord = {
+                id: studentId,
+                name: studentName,
+                score: score,
+                total: gameData.length,
+                date: new Date().toISOString()
+            };
+            playerRecords.push(newRecord);
+            localStorage.setItem('playerRecords', JSON.stringify(playerRecords));
+            
+            // 显示结果
+            resultName.textContent = studentName;
+            resultId.textContent = studentId;
+            resultScore.textContent = `${score} / ${gameData.length}`;
+            resultAccuracy.textContent = `${Math.round((score / gameData.length) * 100)}%`;
+            
+            // 如果有第一次记录，显示第一次成绩
+            if (firstAttemptRecord) {
+                firstAttemptContainer.classList.remove('hidden');
+                firstAttemptScore.textContent = `${firstAttemptRecord.score} / ${firstAttemptRecord.total}`;
+                firstAttemptAccuracy.textContent = `${Math.round((firstAttemptRecord.score / firstAttemptRecord.total) * 100)}%`;
+                
+                // 格式化日期
+                const date = new Date(firstAttemptRecord.date);
+                firstAttemptDate.textContent = date.toLocaleDateString() + ' ' + date.toLocaleTimeString();
+            } else {
+                firstAttemptContainer.classList.add('hidden');
+            }
+            
+            // 如果成绩好，显示庆祝效果
+            if (score / gameData.length >= 0.8) {
+                showCelebration();
+            }
+        }
+        
+        function restartGame() {
+            currentQuestion = 0;
+            score = 0;
+            timeLeft = 180;
+            
+            resultScreen.classList.add('hidden');
+            loginScreen.classList.remove('hidden');
+            
+            // 清空输入框
+            document.getElementById('student-id').value = '';
+            document.getElementById('student-name').value = '';
+        }
+        
+        function showCelebration() {
+            // 简单的庆祝效果
+            const celebrate = document.getElementById('celebrate');
+            celebrate.style.display = 'block';
+            celebrate.innerHTML = `
+                <div style="position:absolute;top:20%;left:50%;font-size:3rem;color:gold;">🎉</div>
+                <div style="position:absolute;top:30%;left:20%;font-size:2rem;color:gold;">✨</div>
+                <div style="position:absolute;top:70%;left:80%;font-size:2.5rem;color:gold;">🌟</div>
+                <div style="position:absolute;top:50%;left:10%;font-size:3rem;color:gold;">🎊</div>
+                <div style="position:absolute;top:60%;left:70%;font-size:2rem;color:gold;">🥳</div>
+            `;
+            
+            // 3秒后隐藏
+            setTimeout(() => {
+                celebrate.style.display = 'none';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
